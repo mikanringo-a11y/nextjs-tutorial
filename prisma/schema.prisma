@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // Vercel Postgres を使う場合は以下のようにプール接続用URLを使うこともあります
+  // url = env("POSTGRES_PRISMA_URL") 
+  // directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+}
+
+model Customer {
+  id        String @id @default(uuid())
+  name      String
+  email     String
+  image_url String
+  invoices  Invoice[]
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  customer_id String
+  amount      Int
+  status      String
+  date        DateTime
+  customer    Customer @relation(fields: [customer_id], references: [id])
+}
+
+model Revenue {
+  month   String @unique
+  revenue Int
+}
